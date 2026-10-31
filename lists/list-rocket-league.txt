@@ -1,0 +1,9 @@
+# Rocket League login, PsyNet, Epic Online Services, and game content.
+# psynet.gg and eos-general were observed in this computer's Launch.log.
+psynet.gg
+psyonix.com
+rocketleague.com
+epicgames.com
+epicgames.dev
+eosgameservices.com
+eos-general.s3.amazonaws.com

@@ -1,0 +1,6 @@
+{
+  "Payload": "quic_initial_4pda_to.bin",
+  "AuthMode": "Direct",
+  "UdpMode": "Fake",
+  "UdpPorts": "7000-10000,15000-15999,21000-21999"
+}
