@@ -79,6 +79,7 @@ echo   6. Switch Discord voice fake (voice stuck on "RTC Connecting")
 echo   7. Rocket League login mode (Direct / DPI)
 echo   8. Rocket League network diagnostics
 echo   9. Advanced settings (service.bat: Game Filter, IPSet, service)
+echo  10. Network Doctor: find why ping is high (Wi-Fi, cable, ISP...)
 echo.
 echo   0. Exit
 echo.
@@ -93,6 +94,7 @@ if "%choice_menu%"=="6" goto discord_fake
 if "%choice_menu%"=="7" goto login_mode
 if "%choice_menu%"=="8" goto diagnostics
 if "%choice_menu%"=="9" goto advanced
+if "%choice_menu%"=="10" goto doctor
 if "%choice_menu%"=="0" exit /b
 goto menu
 
@@ -275,6 +277,15 @@ goto menu
 :: ADVANCED ==============================================================
 :advanced
 start "zapret service" /d "%~dp0." cmd /c service.bat admin
+goto menu
+
+
+:: NETWORK DOCTOR ========================================================
+:doctor
+cls
+%PS% "%~dp0utils\network-doctor.ps1"
+echo.
+pause
 goto menu
 
 

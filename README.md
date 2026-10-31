@@ -47,6 +47,7 @@ Only one strategy can run at a time. The launcher stops the old one first.
 | 7 | Rocket League login mode: Direct (default) or DPI |
 | 8 | Rocket League network diagnostics (DNS + HTTPS to PsyNet/Epic) |
 | 9 | Open `service.bat` (Game Filter, IPSet, install as Windows service, diagnostics) |
+| 10 | Network Doctor (see below) |
 
 ## Discord does not work
 
@@ -58,6 +59,38 @@ Try these in order, restarting Discord after each one:
 3. Still nothing: option 9 -> `5. IPSet Filter` (press it until it shows
    `loaded`) and/or `4. Game Filter`. Both are off by default because they
    send much more traffic through zapret, which can add latency.
+
+## High ping / lag: Network Doctor
+
+Double-click **`Network Doctor.cmd`** (or launcher option 10). In 1-2 minutes it
+tells you *where* the lag comes from and what to do about it:
+
+- **Ping by segment**, all measured at the same time:
+  PC -> router -> ISP -> Moscow -> Frankfurt/Stockholm. Lag that starts at the
+  router is your Wi-Fi/cable/PC; lag that starts at the ISP hop is the ISP line;
+  a big jump between Moscow and Frankfurt is the ISP's route to Europe (where
+  Rocket League EU servers are). The Frankfurt value is about the best EU ping
+  your connection can give.
+- **Hardware**: Wi-Fi vs cable, signal strength, 2.4 vs 5 GHz, USB Wi-Fi /
+  Ethernet adapters (port advice), Ethernet stuck at 100 Mbps or half duplex
+  (damaged cable), packet errors (bad cable/port/driver), disconnects in the
+  last 7 days, devices with driver problems.
+- **Software**: VPN in the path, programs downloading in the background
+  (Steam, torrents, cloud sync), zapret Game Filter.
+- **Bufferbloat**: ping while the line is fully loaded by a download (Russian
+  speed-test servers). A big rise means downloads at home cause lag -> enable
+  SQM/QoS on the router or limit download speeds.
+
+Results are ranked MAJOR / LIKELY / MINOR with a fix for each and saved in
+`utils\test results\`. Run it in the evening and in the morning: if only the
+evening is bad, the ISP is congested.
+
+At the end it offers **safe, reversible** fixes only: turning off network power
+saving (USB selective suspend, PCIe link power saving, Wi-Fi power saving,
+Energy-Efficient/Green Ethernet, "allow Windows to turn off this device").
+Option 2 in Network Doctor undoes them. It deliberately does **not** apply
+"TCP optimizer" registry tweaks (Nagle, NetworkThrottlingIndex, ...): they do
+nothing for Rocket League, which uses UDP.
 
 ## Rocket League
 
