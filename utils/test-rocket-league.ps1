@@ -1,6 +1,10 @@
 param([int]$TimeoutSeconds = 10)
 $ErrorActionPreference = 'Stop'
-$root = Split-Path -Parent $PSScriptRoot
+if (!(Get-Command curl.exe -ErrorAction SilentlyContinue)) {
+    # curl.exe ships with Windows 10 1803+ and every Windows 11 build.
+    Write-Host 'curl.exe was not found. Update Windows 10 to version 1803 or newer.'
+    exit 1
+}
 $results = @()
 foreach ($hostName in 'api.rlpp.psynet.gg', 'config.psynet.gg', 'api.epicgames.dev', 'rl-cdn.psyonix.com', 'eos-general.s3.amazonaws.com') {
     $dns = $false

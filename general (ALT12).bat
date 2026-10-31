@@ -14,8 +14,8 @@ set "LISTS=%~dp0lists\"
 cd /d %BIN%
 
 start "zapret: %~n0" /min "%BIN%winws.exe" --wf-tcp=80,443,5222,2053,2083,2087,2096,8443,%GameFilterTCP% --wf-udp=443,19294-19344,50000-50100,7000-10000,15000-15999,21000-21999,%GameFilterUDP% ^
---comment=RL_AUTH_TCP --filter-tcp=80,443,5222 --hostlist="%LISTS%list-rocket-league.txt" --hostlist-exclude="%LISTS%list-exclude-user.txt" --ipset-exclude="%LISTS%ipset-exclude.txt" --ipset-exclude="%LISTS%ipset-exclude-user.txt" --new ^
---comment=RL_AUTH_QUIC --filter-udp=443 --hostlist="%LISTS%list-rocket-league.txt" --hostlist-exclude="%LISTS%list-exclude-user.txt" --ipset-exclude="%LISTS%ipset-exclude.txt" --ipset-exclude="%LISTS%ipset-exclude-user.txt" --new ^
+--comment=RL_AUTH_TCP --filter-tcp=80,443,5222 --hostlist="%LISTS%list-rocket-league.txt" --hostlist-exclude="%LISTS%list-exclude-user.txt" --new ^
+--comment=RL_AUTH_QUIC --filter-udp=443 --hostlist="%LISTS%list-rocket-league.txt" --hostlist-exclude="%LISTS%list-exclude-user.txt" --new ^
 --comment=RL_GAME_UDP --filter-udp=7000-10000,15000-15999,21000-21999 --ipset-exclude="%LISTS%ipset-exclude.txt" --ipset-exclude="%LISTS%ipset-exclude-user.txt" --dpi-desync=fake --dpi-desync-repeats=6 --dpi-desync-any-protocol=1 --dpi-desync-fake-unknown-udp="%BIN%quic_initial_4pda_to.bin" --dpi-desync-fake-stun="%BIN%quic_initial_4pda_to.bin" --dpi-desync-cutoff=d4 --new ^
 --filter-udp=443 --hostlist="%LISTS%list-general.txt" --hostlist="%LISTS%list-general-user.txt" --hostlist-exclude="%LISTS%list-exclude.txt" --hostlist-exclude="%LISTS%list-exclude-user.txt" --ipset-exclude="%LISTS%ipset-exclude.txt" --ipset-exclude="%LISTS%ipset-exclude-user.txt" --dpi-desync=fake --dpi-desync-repeats=11 --dpi-desync-fake-quic="%BIN%quic_initial_www_google_com.bin" --new ^
 --filter-udp=19294-19344,50000-50100 --filter-l7=discord,stun --dpi-desync=fake --dpi-desync-fake-discord="%BIN%stun.bin" --dpi-desync-fake-discord="%BIN%ACTIVE_DISCORD_UDP.bin" --dpi-desync-fake-stun="%BIN%ACTIVE_DISCORD_UDP.bin" --dpi-desync-repeats=3 --new ^

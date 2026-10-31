@@ -1,2 +1,18 @@
-# Auto detect text files and perform LF normalization
+# Windows cmd.exe mis-parses labels (goto / call :label) in batch files that use
+# LF-only line endings, so scripts must be checked out (and put into GitHub ZIP
+# downloads) with CRLF. This matches upstream Flowseal/zapret-discord-youtube.
 * text=auto
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.txt text eol=crlf
+*.backup text eol=crlf
+*.enabled text eol=crlf
+*.json text eol=crlf
+*.md text eol=crlf
+
+# Engine binaries and fake payloads must never be converted.
+*.bin binary
+*.exe binary
+*.dll binary
+*.sys binary

@@ -28,6 +28,8 @@ foreach ($range in $state.UdpPorts.Split(',')) {
     if ($first -lt 1 -or $last -gt 65535 -or $first -gt $last) { throw 'UDP ports must be between 1 and 65535.' }
 }
 
+# Login rules match public Epic/Psyonix hostnames only, so they carry no LAN
+# ipset-exclude: every extra path shortens the maximum folder path cmd.exe allows.
 # Keep every profile literal in each launcher so upstream service installation
 # and strategy tests can parse it without a custom runtime or environment.
 $plans = @()
@@ -42,8 +44,8 @@ foreach ($file in Get-ChildItem -LiteralPath $root -Filter 'general*.bat') {
     if (!$web) { throw "Cannot find the TCP strategy in $($file.Name)" }
     $desync = [regex]::Match($web, '--dpi-desync=.*?(?= --new| \^|$)').Value
     if (!$desync) { throw "Cannot find the TCP desync settings in $($file.Name)" }
-    $auth = '--comment=RL_AUTH_TCP --filter-tcp=80,443,5222 --hostlist="%LISTS%list-rocket-league.txt" --hostlist-exclude="%LISTS%list-exclude-user.txt" --ipset-exclude="%LISTS%ipset-exclude.txt" --ipset-exclude="%LISTS%ipset-exclude-user.txt"'
-    $quic = '--comment=RL_AUTH_QUIC --filter-udp=443 --hostlist="%LISTS%list-rocket-league.txt" --hostlist-exclude="%LISTS%list-exclude-user.txt" --ipset-exclude="%LISTS%ipset-exclude.txt" --ipset-exclude="%LISTS%ipset-exclude-user.txt"'
+    $auth = '--comment=RL_AUTH_TCP --filter-tcp=80,443,5222 --hostlist="%LISTS%list-rocket-league.txt" --hostlist-exclude="%LISTS%list-exclude-user.txt"'
+    $quic = '--comment=RL_AUTH_QUIC --filter-udp=443 --hostlist="%LISTS%list-rocket-league.txt" --hostlist-exclude="%LISTS%list-exclude-user.txt"'
     if ($state.AuthMode -eq 'Strategy') {
         $auth += ' ' + $desync
         $quic += ' --dpi-desync=fake --dpi-desync-repeats=6 --dpi-desync-fake-quic="%BIN%quic_initial_www_google_com.bin"'
@@ -58,10 +60,6 @@ foreach ($file in Get-ChildItem -LiteralPath $root -Filter 'general*.bat') {
         ($quic + ' --new ^')
         ($game + ' --new ^')
     )
-    if ($file.Name -eq 'general (ALT9-CS2).bat') {
-        $lines[$start] = $lines[$start].Replace(',%GameFilterUDP%', ',4380,27000-27100,%GameFilterUDP%')
-        $extra += '--comment=RL_CS2_COMPAT --filter-udp=4380,27000-27100 --ipset-exclude="%LISTS%ipset-exclude.txt" --ipset-exclude="%LISTS%ipset-exclude-user.txt" --dpi-desync=fake --dpi-desync-repeats=4 --dpi-desync-any-protocol=1 --dpi-desync-fake-unknown-udp="%BIN%ACTIVE_GAME_UDP.bin" --dpi-desync-cutoff=d3 --new ^'
-    }
     $output = @($lines[0..$start]) + $extra + @($lines[($start + 1)..($lines.Count - 1)])
     $plans += [pscustomobject]@{ Path = $file.FullName; Content = ($output -join "`r`n") + "`r`n" }
 }
