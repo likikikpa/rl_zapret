@@ -39,8 +39,22 @@ if not "%ROOT_PATH:~57,1%"=="" (
     pause
 )
 
+:: First run (no strategy saved yet): find the one that works on this provider.
+if not exist "%STRATEGY_FILE%" goto first_run
+
 :: Double-click = start the saved strategy right away, then show the menu.
 goto start
+
+:first_run
+cls
+echo.
+echo   First start: zapret will now test every strategy (ALT) on your
+echo   connection and pick the one that works best for Discord.
+echo   This takes about 3-6 minutes. Press N to skip and use %DEFAULT_STRATEGY%.
+echo.
+choice /c YN /t 20 /d Y /n /m "  Run auto-select now? [Y/N] (auto-yes in 20 s): "
+if errorlevel 2 goto start
+goto auto_select
 
 
 :: MENU ==================================================================
@@ -59,11 +73,12 @@ echo   1. Start / restart zapret with this strategy
 echo   2. Choose another strategy (ALT)
 echo   3. Stop zapret
 echo.
-echo   4. Test all strategies (find one where Discord works)
-echo   5. Switch Discord voice fake (voice stuck on "RTC Connecting")
-echo   6. Rocket League login mode (Direct / DPI)
-echo   7. Rocket League network diagnostics
-echo   8. Advanced settings (service.bat: Game Filter, IPSet, service)
+echo   4. AUTO-SELECT the best strategy for your provider (3-6 min)
+echo   5. Manual strategy tester (detailed upstream tests)
+echo   6. Switch Discord voice fake (voice stuck on "RTC Connecting")
+echo   7. Rocket League login mode (Direct / DPI)
+echo   8. Rocket League network diagnostics
+echo   9. Advanced settings (service.bat: Game Filter, IPSet, service)
 echo.
 echo   0. Exit
 echo.
@@ -72,11 +87,12 @@ set /p "choice_menu=  Select option: "
 if "%choice_menu%"=="1" goto start
 if "%choice_menu%"=="2" goto choose
 if "%choice_menu%"=="3" goto stop
-if "%choice_menu%"=="4" goto tests
-if "%choice_menu%"=="5" goto discord_fake
-if "%choice_menu%"=="6" goto login_mode
-if "%choice_menu%"=="7" goto diagnostics
-if "%choice_menu%"=="8" goto advanced
+if "%choice_menu%"=="4" goto auto_select
+if "%choice_menu%"=="5" goto tests
+if "%choice_menu%"=="6" goto discord_fake
+if "%choice_menu%"=="7" goto login_mode
+if "%choice_menu%"=="8" goto diagnostics
+if "%choice_menu%"=="9" goto advanced
 if "%choice_menu%"=="0" exit /b
 goto menu
 
@@ -107,7 +123,7 @@ if errorlevel 1 goto start_failed
 echo.
 echo   Zapret is running ("%STRATEGY%").
 echo   Restart Discord and Rocket League now so they open new connections.
-echo   If Discord still does not work, use option 4 to find a working ALT.
+echo   If Discord still does not work, use option 4 (auto-select).
 echo.
 pause
 goto menu
@@ -125,7 +141,7 @@ goto menu
 :service_conflict
 echo.
 echo   The zapret Windows service is running. Two copies of winws cannot run
-echo   at the same time. Open service.bat (option 8) and choose
+echo   at the same time. Open service.bat (option 9) and choose
 echo   "Remove Services", or keep using the installed service.
 echo.
 pause
@@ -148,7 +164,7 @@ goto menu
 cls
 echo.
 echo   All strategies include the Rocket League rules. Discord/YouTube
-echo   support differs by provider - use option 4 to test them.
+echo   support differs by provider - option 4 picks one automatically.
 echo.
 setlocal EnableDelayedExpansion
 set "count=0"
@@ -173,6 +189,24 @@ echo.
 choice /c YN /n /m "  Saved. Start it now? [Y/N]: "
 if errorlevel 2 goto menu
 goto start
+
+
+:: AUTO-SELECT ===========================================================
+:auto_select
+cls
+call :service_running
+if not errorlevel 1 goto service_conflict
+%PS% "%~dp0utils\auto-select.ps1"
+set "auto_result=%errorlevel%"
+call :load_strategy
+echo.
+if not "%auto_result%"=="0" (
+    echo   Auto-select did not finish. Starting the saved strategy instead.
+    pause
+    goto start
+)
+pause
+goto menu
 
 
 :: TESTS =================================================================
@@ -270,7 +304,7 @@ set "ZSTATE=stopped"
 call :winws_running
 if not errorlevel 1 set "ZSTATE=RUNNING"
 call :service_running
-if not errorlevel 1 set "ZSTATE=RUNNING as Windows service (see option 8)"
+if not errorlevel 1 set "ZSTATE=RUNNING as Windows service (see option 9)"
 set "RL_AUTH=Direct"
 findstr /i /r /c:"AuthMode.*Strategy" "%~dp0utils\rocket-league.json" >nul 2>&1
 if not errorlevel 1 set "RL_AUTH=DPI"
